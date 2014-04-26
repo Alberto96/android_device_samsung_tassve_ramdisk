@@ -1,0 +1,294 @@
+on init
+
+##
+# Battery Init File
+##
+
+    setprop status.battery.state Slow
+    setprop status.battery.level 5
+    setprop status.battery.level_raw  50
+    setprop status.battery.level_scale 9
+
+on post-fs
+
+##
+# Sensors Init File
+##
+
+    mkdir /data/misc/sensors 0777 system misc
+
+    chown root system /dev/mmc328x
+    chown root system /dev/ecompass_ctrl
+    chown root system /dev/bma222
+    chown root system /dev/proximity
+    
+    chmod 0660 /dev/mmc328x
+    chmod 0660 /dev/ecompass_ctrl
+    chmod 0660 /dev/bma222
+    chmod 0660 /dev/proximity
+
+    chmod 0660 /data/misc/sensors/ecs_nvm
+    chmod 0660 /data/misc/sensors/accel_offset
+
+    chown system system /sys/class/input/input0/enable
+    chown system system /sys/class/input/input0/poll_delay
+    chmod 0660 /sys/class/input/input0/enable
+    chmod 0660 /sys/class/input/input0/poll_delay
+
+on boot
+
+##
+# Broadcom Stuff
+##
+
+    # Samsung Partitions Permissions
+    chown radio radio /proc/LinuStoreIII/efs_info 
+    chmod 0664 /proc/LinuStoreIII/efs_info
+    chown radio radio /proc/LinuStoreIII/keystr 
+    chmod 0664 /proc/LinuStoreIII/keystr
+    chown radio radio /proc/LinuStoreIII/ril_prop 
+    chmod 0664 /proc/LinuStoreIII/ril_prop
+    chown radio radio /proc/LinuStoreIII/fsbuild_check 
+    chmod 0664 /proc/LinuStoreIII/fsbuild_check   
+
+    # Backlight permissions
+    chown system system /sys/class/backlight/aat1401-backlight/brightness
+    chown system system /sys/class/backlight/pwm-keypad-backlight.0/brightness
+
+    # Broadcom Hardware Permissions
+    chmod 0666 /dev/bcm_alsa_pcg
+    chmod 0777 /dev/bcm_kril
+    chmod 0777 /dev/bcm_vsp
+    chmod 0660 /dev/bcm_atc
+    chown system system /dev/bcm_kpdp
+    chown shell system /dev/bcm_atc
+    chmod 0660 /dev/bcm_alsa_voip
+    chown radio system /dev/bcm_alsa_voip
+    chmod 0666 /dev/v3d
+
+    # Load Broadcom Hardware Modules
+    chmod 0777 /sbin/busybox
+    exec /sbin/insmod /system/lib/modules/memalloc.ko
+    exec /sbin/insmod /system/lib/modules/hx170dec.ko
+    exec /sbin/insmod /system/lib/modules/h6270enc.ko
+    exec /sbin/insmod /system/lib/modules/gememalloc.ko    
+    exec /sbin/insmod /system/lib/modules/ge_drv.ko   
+    exec /sbin/insmod /system/lib/modules/brcm_switch.ko
+    exec /sbin/insmod /system/lib/modules/bcm_headsetsw.ko
+
+    # Broadcom Hardware Permissions
+    chmod 0777 /dev/camera
+    chown system system /sys/bcm/cache
+    chmod 0771 /dev/ttyGS0
+    chown system system /dev/ttyGS0
+    chown system system /dev/ttyS0
+    chown radio system /sys/module/bcm_fuse_net/parameters/pdp_waketime
+
+    chown system system /sys/module/bcm215xx_pm/parameters/debug
+
+    # Permisssion for cache-ops
+    chmod 0666 /dev/cache-ops
+
+##
+# Bluetooth Init File
+##
+
+    # for bluetooth. change access rights as btld runs as bluetooth user
+    chown root bluetooth /dev/ttyS1
+    chmod 0660 /dev/ttyS1
+    chown root bluetooth /sys/class/rfkill/rfkill0
+    chown root bluetooth /sys/class/rfkill/rfkill0/state
+    chown root bluetooth /sys/class/rfkill/rfkill0/claim
+    chown root bluetooth /sys/class/rfkill/rfkill0/soft
+    chmod 0664 /sys/class/rfkill/rfkill0/state
+    chmod 0664 /sys/class/rfkill/rfkill0/claim
+    chmod 0664 /sys/class/rfkill/rfkill0/soft
+    chown root bluetooth /sys/class/sound/controlC0/FMDirectPlay
+    chmod 0664 /sys/class/sound/controlC0/FMDirectPlay
+    chown root net_bt_admin /sys/devices/system/cpu/cpufreq/bcm21553/dvfs
+    chmod 0664 /sys/devices/system/cpu/cpufreq/bcm21553/dvfs
+    chmod 0777 /dev/pmem_adsp
+
+    # bcm audio loopback test mode.
+    chmod 0666 /dev/bcm_alsa_pcg
+    chmod 0666 /dev/bcm_log
+    chmod 0666 /dev/bcm_audio_log
+
+    # Force Power Down
+    chmod 0660 /sys/class/sec/pm/power_down
+    chown root system /sys/class/sec/pm/power_down
+
+    # CPU Governor
+    chmod 0660 /sys/class/sec/cpu/cpu_gov
+    chown root system /sys/class/sec/cpu/cpu_gov
+
+##
+# Wi-Fi Init File
+##
+
+    chown wifi wifi /system/etc/wifi
+    chmod 0777 /system/etc/wifi
+    chmod 0777 /system/etc/wifi/wpa_supplicant.conf
+    chown wifi wifi /system/etc/wifi/wpa_supplicant.conf
+
+    mkdir /data/misc/wifi 0775 wifi wifi
+    mkdir /data/misc/wifi/sockets 0775 wifi wifi
+    chmod 0775 /data/misc/wifi/sockets
+    chmod 0775 /data/misc/wifi
+    chmod 0775 /data/misc/wifi/wpa_supplicant.conf
+    chown wifi wifi /data/misc/wifi
+    chown wifi wifi /data/misc/wifi/wpa_supplicant.conf
+    mkdir /data/misc/dhcp 0770 dhcp dhcp
+    chown dhcp dhcp /data/misc/dhcp
+    chmod 0775 /data/misc/dhcp
+
+    chmod 0777 /data/misc/wifi/wl
+    chown wifi wifi /data/misc/wifi/wl
+    chmod 0777 /data/misc/wifi/iperf
+    chown wifi wifi /data/misc/wifi/iperf
+    chmod 0777 /data/misc/wifi/nvram.txt
+    chown wifi wifi /data/misc/wifi/nvram.txt
+
+    # Let wifi control BT_VREG_CTL GPIO
+    chown wifi wifi /sys/class/gpio/gpio21/value
+    chmod 0664 /sys/class/gpio/gpio21/value
+
+##
+# GPS Init File
+##
+
+    chown gps system /dev/ttyS2
+
+    write /sys/class/gpio/export 56
+    chown gps system /sys/class/gpio/gpio56/value
+    chown gps system /sys/class/gpio/gpio56/direction
+    write /sys/class/gpio/gpio56/value 0
+    write /sys/class/gpio/gpio56/direction out
+
+    write /sys/class/gpio/export 23
+    chown gps system /sys/class/gpio/gpio23/value
+    chown gps system /sys/class/gpio/gpio23/direction
+    write /sys/class/gpio/gpio23/value 0
+    write /sys/class/gpio/gpio23/direction out
+    chown gps system /data/gps/glgpsctrl
+    chown gps system /dev/bcm_gps
+    chown gps system /dev/bcm_cntin
+
+    # Define broadcom gps properties 
+    setprop gps.fd.block "false"
+
+    # Use misc partition for flash OTP access
+    chown root radio /dev/mtd/mtd9
+    chmod 0640 /dev/mtd/mtd9
+    
+##
+# Sensors Permissions
+##
+
+    # proximity
+    chown system input /sys/class/input/input0/enable
+    chown system input /sys/class/input/input0/delay
+    chown system input /sys/class/input/input0/wake
+
+    # accelerometer
+    chown system input /sys/class/input/input3/enable
+    chown system input /sys/class/input/input3/delay
+    chown system input /sys/class/input/input3/wake
+
+    # geomagnetic
+    chown system input /sys/class/input/input1/enable
+    chown system input /sys/class/input/input1/delay
+    chown system input /sys/class/input/input1/wake
+
+    # geomagnetic_raw
+    chown compass input /sys/class/input/input2/offsets
+
+    # orientation
+    chown system input /sys/class/input/input4/enable
+    chown system input /sys/class/input/input4/delay
+    chown system input /sys/class/input/input4/wake
+
+##
+# Sensors Direction
+##
+
+    # accelerometer
+    write /sys/class/input/input3/position 3
+
+    # geomagnetic
+    write /sys/class/input/input1/position 0
+
+##
+# Daemon processes to be run by init.
+##
+
+# Bluetooth
+service hciattach /system/bin/logwrapper /system/bin/brcm_patchram_plus --bd_addr 4C0B3A2DF4B8 --enable_hci --tosleep 50000 --baudrate 3000000 --use_baudrate_for_download --i2s=1,1,0,1 --no2bytes --patchram /system/bin/BCM4330B1_002.001.003.0634.0652.hcd /dev/ttyS1
+    class main
+    user bluetooth
+    group bluetooth net_bt_admin
+    disabled
+    oneshot
+
+# GPS
+service gpsd /system/bin/glgps -c /system/etc/gps/glconfig4751.xml
+    class main
+    user gps
+    group system sdcard_rw inet net_raw
+
+# Wi-Fi
+service wpa_supplicant /system/bin/wpa_supplicant -dd -Dwext -ieth0 -c /data/misc/wifi/wpa_supplicant.conf
+    class main
+    socket wpa_eth0 dgram 660 wifi wifi
+    group system wifi inet
+    disabled
+    oneshot
+
+service dhcpcd_eth0 /system/bin/dhcpcd -ABKL
+    class main
+    disabled
+    oneshot
+
+service dhcpcd_bnep0 /system/bin/dhcpcd -ABKL
+    class main
+    disabled
+    oneshot
+
+service iprenew_eth0 /system/bin/dhcpcd -n
+    class main
+    disabled
+    oneshot
+
+service iprenew_bnep0 /system/bin/dhcpcd -n
+    class main
+    disabled
+    oneshot
+
+service wlandutservice /system/bin/wlandutservice
+    class main
+    disabled
+    oneshot
+
+# Bluetooth & Wi-Fi Addresses
+service get_macaddrs /system/bin/get_macaddrs
+    class main
+    user root
+    oneshot
+    disabled
+
+# Sensors
+service memsicd /system/bin/memsicd
+    class main
+    user system
+    group system    
+    oneshot
+
+##
+# Scheduling
+##
+
+on property:init.svc.wpa_supplicant=stopped
+    stop dhcpcd
+
+on property:init.svc.ril-daemon=running
+    start get_macaddrs
