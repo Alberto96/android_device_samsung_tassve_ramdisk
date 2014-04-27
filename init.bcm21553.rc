@@ -41,6 +41,9 @@ on boot
 # Broadcom Stuff
 ##
 
+    # Bacem Tweak support
+    write /proc/sys/bacem/volt/cpu -60mV
+
     # Samsung Partitions Permissions
     chown radio radio /proc/LinuStoreIII/efs_info 
     chmod 0664 /proc/LinuStoreIII/efs_info
